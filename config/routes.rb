@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :posts
+  resources :posts, param: :slug
   devise_for :users, controllers: { sessions: 'sessions' }
 
   post 'otp/request', to: 'otp#request_otp'
