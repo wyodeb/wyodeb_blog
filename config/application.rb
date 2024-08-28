@@ -9,6 +9,7 @@ Bundler.require(*Rails.groups)
 module WyodebBlog
   class Application < Rails::Application
     config.middleware.use ActionDispatch::Session::CookieStore, key: '_wyodeb_blog_session'
+    config.autoload_paths += %W(#{config.root}/app/services)
 
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2

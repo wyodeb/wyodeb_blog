@@ -7,9 +7,19 @@ class User < ApplicationRecord
   # Enable token authentication only if `authentication_token` is present
   devise :token_authenticatable if attribute_names.include?('authentication_token')
 
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validate :validate_email_format
 
-  # Token generation logic
+  def validate_email_format
+    if email.present? && !email.match?(URI::MailTo::EMAIL_REGEXP)
+      errors.add(:email, 'is invalid')
+    end
+  end
+
+  def valid_email?
+    email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
+  end
+
+
   def generate_authentication_token
     loop do
       token = Devise.friendly_token(128)
