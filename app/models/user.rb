@@ -1,7 +1,9 @@
 class User < ApplicationRecord
   enum :role, {:poster=>1, :commenter=>2}
 
+
   has_many :tokens, dependent: :destroy
+  has_many :posts
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
   # Enable token authentication only if `authentication_token` is present

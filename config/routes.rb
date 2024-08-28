@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :posts
   devise_for :users, controllers: { sessions: 'sessions' }
 
   post 'otp/request', to: 'otp#request_otp'
@@ -14,5 +15,5 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "posts#index"
 end
