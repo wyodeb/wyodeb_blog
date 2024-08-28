@@ -7,5 +7,5 @@ User.create!(
   email: 'poster@example.com',
   password: 'password123',  # Required by Devise
   password_confirmation: 'password123', # Required by Devise
-  role: 1
+  role: :poster
 )
