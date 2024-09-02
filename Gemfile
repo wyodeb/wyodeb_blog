@@ -28,7 +28,7 @@ group :development, :test do
   gem 'rspec-core', '~> 3.13.0'
   gem 'rspec-expectations', '~> 3.13.2'
   gem 'rspec-mocks', '~> 3.13.1'
-  gem 'rspec-rails', '~> 6.1.4'
+  gem 'rspec-rails', '~> 6.1.5'
 
   gem 'factory_bot_rails',  require: false
   gem 'shoulda-matchers', '~> 5.0'
