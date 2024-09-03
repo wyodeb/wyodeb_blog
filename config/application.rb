@@ -2,6 +2,7 @@ require_relative "boot"
 
 require "rails/all"
 
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -26,6 +27,7 @@ module WyodebBlog
     # in config/environments, which are processed later.
     #
     config.time_zone = "Europe/Chisinau"
+    # config.active_job.queue_adapter = :delayed_job
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Only loads a smaller set of middleware suitable for API only apps.

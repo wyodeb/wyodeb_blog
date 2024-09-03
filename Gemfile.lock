@@ -95,6 +95,11 @@ GEM
     debug (1.9.2)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    delayed_job (4.1.12)
+      activesupport (>= 3.0, < 8.0)
+    delayed_job_active_record (4.1.10)
+      activerecord (>= 3.0, < 8.0)
+      delayed_job (>= 3.0, < 5)
     devise (4.9.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -104,6 +109,10 @@ GEM
     devise-token_authenticatable (1.1.0)
       devise (>= 4.0.0, < 5.0.0)
     diff-lcs (1.5.1)
+    dotenv (3.1.2)
+    dotenv-rails (3.1.2)
+      dotenv (= 3.1.2)
+      railties (>= 6.1)
     drb (2.2.1)
     erubi (1.13.0)
     factory_bot (6.4.6)
@@ -111,6 +120,8 @@ GEM
     factory_bot_rails (6.4.3)
       factory_bot (~> 6.4)
       railties (>= 5.0.0)
+    faker (3.4.2)
+      i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.5)
@@ -281,9 +292,13 @@ DEPENDENCIES
   bootsnap
   brakeman
   debug
+  delayed_job
+  delayed_job_active_record
   devise
   devise-token_authenticatable
+  dotenv-rails
   factory_bot_rails
+  faker
   puma (>= 5.0)
   rails (~> 7.2.0)
   rspec-core (~> 3.13.0)

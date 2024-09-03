@@ -11,6 +11,7 @@ gem 'devise-token_authenticatable'
 gem 'activerecord-session_store'
 
 
+
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -32,6 +33,8 @@ group :development, :test do
 
   gem 'factory_bot_rails',  require: false
   gem 'shoulda-matchers', '~> 5.0'
+  gem 'faker'
+  gem 'dotenv-rails'
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false

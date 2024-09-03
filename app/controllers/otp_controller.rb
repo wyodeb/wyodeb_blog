@@ -28,12 +28,12 @@ class OtpController < ApplicationController
       end
 
       UserMailer.otp_email(user, otp).deliver_later
-    end
 
-    head :ok
+      render json: { message: 'OTP sent successfully' }, status: :ok
+    end
   rescue StandardError => e
     Rails.logger.error("Error during OTP request: #{e.message}")
-    head :internal_server_error
+    render json: { error: 'Failed to send OTP' }, status: :internal_server_error
   end
 
   def verify_otp
@@ -41,15 +41,15 @@ class OtpController < ApplicationController
 
     if token && !token.expired?
       token.destroy
-      render json: { message: 'OTP verified successfully' }
+      render json: { message: 'OTP verified successfully' }, status: :ok
     else
-      head :unauthorized
+      render json: { error: 'Invalid or expired OTP' }, status: :unauthorized
     end
   end
 
   private
 
   def generate_otp
-    SecureRandom.random_number(100000..999999).to_s
+    SecureRandom.random_number(100_000..999_999).to_s
   end
 end
