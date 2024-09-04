@@ -42,10 +42,15 @@ RSpec.describe OtpController, type: :controller do
         create(:token, user: user, otp: otp, expires_at: 10.minutes.from_now)
       end
 
-      it 'verifies the OTP and returns a success message' do
+      it 'verifies the OTP, signs in the user, and returns a success message with a token' do
         post :verify_otp, params: { email: email, otp: otp }
+
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to include('message' => 'OTP verified successfully')
+
+        body = JSON.parse(response.body)
+        expect(body).to include('message' => 'OTP verified successfully')
+        expect(body).to have_key('token')
+        expect(body['token']).to eq(user.reload.authentication_token)
       end
     end
 

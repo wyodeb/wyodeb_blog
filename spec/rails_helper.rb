@@ -1,4 +1,3 @@
-require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rspec/rails'
@@ -9,6 +8,9 @@ require 'faker'
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 # Configure RSpec
 RSpec.configure do |config|
+  config.before(:each, type: :request) do
+    @headers = { 'Content-Type' => 'application/json' }
+  end
   config.infer_spec_type_from_file_location!
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.filter_rails_from_backtrace!

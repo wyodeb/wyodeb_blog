@@ -41,7 +41,15 @@ class OtpController < ApplicationController
 
     if token && !token.expired?
       token.destroy
-      render json: { message: 'OTP verified successfully' }, status: :ok
+
+      user = token.user
+      user.authentication_token = user.generate_authentication_token
+      if user.save
+        sign_in(:user, user, store: false)
+        render json: { message: 'OTP verified successfully', token: user.authentication_token }, status: :ok
+      else
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      end
     else
       render json: { error: 'Invalid or expired OTP' }, status: :unauthorized
     end

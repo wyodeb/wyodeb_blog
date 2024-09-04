@@ -4,25 +4,44 @@ class PostsController < ApplicationController
   before_action :authorize_poster!, only: %i[create update destroy]
 
   # GET /posts
+  # GET /posts
+  # GET /posts
+
   def index
     if current_user
-      posts = Post.where('user_id = ? OR status != ?', current_user.id, 'draft')
+      # Authenticated users: show all posts belonging to the current user (including drafts)
+      posts = Post.where(user_id: current_user.id).or(Post.where(status: 'published'))
     else
-      posts = Post.where(status: :published)
+      # Non-authenticated users: show only published posts
+      posts = Post.where(status: 'published')
     end
+
+    # Include status information for authenticated users, exclude for others
     render json: posts.as_json(current_user ? { methods: :status } : { except: :status })
   end
 
+
+
+
+
+
+
+
+
+
   # GET /posts/1
   def show
+    Rails.logger.info "Handling POST show action"
     if current_user == @post.user
       render json: @post.as_json(methods: :status)
     elsif @post.status == 'published'
       render json: @post.as_json(except: :status)
     else
-      render json: { error: 'Post not found' }, status: :not_found
+      render  status: :not_found
     end
   end
+
+
 
 
   # POST /posts

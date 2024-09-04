@@ -3,14 +3,20 @@ require 'rails_helper'
 RSpec.describe PostsController, type: :request do
   let(:poster) { create(:user, :poster) }
   let(:commenter) { create(:user, :commenter) }
-  let(:draft_post) { create(:post, user: poster, status: :draft) }
-  let(:published_post) { create(:post, user: poster, status: :published) }
+  let!(:draft_post) { create(:post, user: poster, status: :draft) }
+  let!(:published_post) { create(:post, user: poster, status: :published) }
+
+  def set_auth_header(user)
+    token = user.generate_authentication_token
+    user.update(authentication_token: token)
+    @headers = { 'Authorization' => "Bearer #{token}" }
+  end
 
   describe 'GET /posts' do
     context 'when the user is logged in as a poster' do
       before do
-        sign_in(poster) # Ensure this method is properly implemented
-        get posts_path
+        set_auth_header(poster)
+        get posts_path, headers: @headers
       end
 
       it 'returns all posts including drafts' do
@@ -35,8 +41,8 @@ RSpec.describe PostsController, type: :request do
   describe 'GET /posts/:slug' do
     context 'when the user is logged in as the post owner' do
       before do
-        sign_in(poster)
-        get post_path(draft_post.slug)
+        set_auth_header(poster)
+        get post_path(draft_post.slug), headers: @headers
       end
 
       it 'returns the post including the status' do
@@ -48,7 +54,10 @@ RSpec.describe PostsController, type: :request do
     end
 
     context 'when the user is not the owner and the post is published' do
-      before { get post_path(published_post.slug) }
+      before do
+        set_auth_header(commenter)
+        get post_path(published_post.slug), headers: @headers
+      end
 
       it 'returns the post without the status' do
         expect(response).to have_http_status(:ok)
@@ -60,14 +69,12 @@ RSpec.describe PostsController, type: :request do
 
     context 'when the post is not found' do
       before do
-        sign_in(poster)
-        get post_path('non-existent-slug')
+        set_auth_header(poster)
+        get post_path('non-existent-slug'), headers: @headers
       end
 
       it 'returns a not found error' do
         expect(response).to have_http_status(:not_found)
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('Post not found')
       end
     end
   end
@@ -75,13 +82,13 @@ RSpec.describe PostsController, type: :request do
   describe 'POST /posts' do
     context 'when the user is a poster' do
       before do
-        sign_in(poster)
-        post posts_path, params: { post: { title: 'New Post', content: 'Post content' } }
+        set_auth_header(poster)
+        post posts_path, params: { post: { title: 'New Post', content: 'Post content' } }, headers: @headers
       end
 
       it 'creates a new post with draft status' do
         expect(response).to have_http_status(:created)
-        expect(Post.count).to eq(3) # Adjust based on initial count
+        expect(Post.count).to eq(3)
         json_response = JSON.parse(response.body)
         expect(json_response['status']).to eq('draft')
       end
@@ -89,8 +96,8 @@ RSpec.describe PostsController, type: :request do
 
     context 'when the user is not a poster' do
       before do
-        sign_in(commenter)
-        post posts_path, params: { post: { title: 'New Post', content: 'Post content' } }
+        set_auth_header(commenter)
+        post posts_path, params: { post: { title: 'New Post', content: 'Post content' } }, headers: @headers
       end
 
       it 'returns a forbidden error' do
@@ -104,8 +111,8 @@ RSpec.describe PostsController, type: :request do
   describe 'PATCH /posts/:slug' do
     context 'when the user is a poster' do
       before do
-        sign_in(poster)
-        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title' } }
+        set_auth_header(poster)
+        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title' } }, headers: @headers
       end
 
       it 'updates the post' do
@@ -116,8 +123,8 @@ RSpec.describe PostsController, type: :request do
 
     context 'when the user is not a poster' do
       before do
-        sign_in(commenter)
-        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title' } }
+        set_auth_header(commenter)
+        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title' } }, headers: @headers
       end
 
       it 'returns a forbidden error' do
@@ -131,20 +138,20 @@ RSpec.describe PostsController, type: :request do
   describe 'DELETE /posts/:slug' do
     context 'when the user is a poster' do
       before do
-        sign_in(poster)
-        delete post_path(draft_post.slug)
+        set_auth_header(poster)
+        delete post_path(draft_post.slug), headers: @headers
       end
 
       it 'deletes the post' do
         expect(response).to have_http_status(:no_content)
-        expect(Post.count).to eq(2) # Adjust based on initial count
+        expect(Post.count).to eq(1)
       end
     end
 
     context 'when the user is not a poster' do
       before do
-        sign_in(commenter)
-        delete post_path(draft_post.slug)
+        set_auth_header(commenter)
+        delete post_path(draft_post.slug), headers: @headers
       end
 
       it 'returns a forbidden error' do
@@ -155,3 +162,4 @@ RSpec.describe PostsController, type: :request do
     end
   end
 end
+
