@@ -1,14 +1,23 @@
-# spec/factories/users.rb
+
+
 FactoryBot.define do
   factory :user do
-    email { 'test@example.com' }
+    email { Faker::Internet.email }
     username { 'testuser' }
-    password { 'password' }  # Default password
+    password { 'password' }
+
+    trait :poster do
+      role { :poster }
+    end
+
+    trait :commenter do
+      role { :commenter }
+    end
 
     trait :without_password do
+      password { nil }
+      password_confirmation { nil }
       after(:build) do |user|
-        user.password = nil
-        user.password_confirmation = nil
         user.instance_eval do
           def password_required?
             false

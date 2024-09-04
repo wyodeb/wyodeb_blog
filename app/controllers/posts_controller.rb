@@ -4,33 +4,49 @@ class PostsController < ApplicationController
   before_action :authorize_poster!, only: %i[create update destroy]
 
   # GET /posts
-  def index
-    posts = if current_user
-              Post.all
-            else
-              Post.where.not(status: 'draft')
-            end
+  # GET /posts
+  # GET /posts
 
-    render json: posts.as_json(methods: :status)
+  def index
+    if current_user
+      # Authenticated users: show all posts belonging to the current user (including drafts)
+      posts = Post.where(user_id: current_user.id).or(Post.where(status: 'published'))
+    else
+      # Non-authenticated users: show only published posts
+      posts = Post.where(status: 'published')
+    end
+
+    # Include status information for authenticated users, exclude for others
+    render json: posts.as_json(current_user ? { methods: :status } : { except: :status })
   end
+
+
+
+
+
+
+
+
+
 
   # GET /posts/1
   def show
-    post_data = @post.as_json(methods: :status) # Include the status attribute in the JSON output
-
-    if current_user == @post.user || post_data['status']
-      # If the current user is the author or the status is present, include status
-      render json: post_data
-    else
-      # Otherwise, exclude status from the JSON output
+    Rails.logger.info "Handling POST show action"
+    if current_user == @post.user
+      render json: @post.as_json(methods: :status)
+    elsif @post.status == 'published'
       render json: @post.as_json(except: :status)
+    else
+      render  status: :not_found
     end
   end
 
 
+
+
   # POST /posts
   def create
-    @post = current_user.posts.new(post_params.merge(status: :draft))
+    @post = current_user.posts.new(post_params)
 
     if @post.save
       render json: @post.as_json(methods: :status), status: :created

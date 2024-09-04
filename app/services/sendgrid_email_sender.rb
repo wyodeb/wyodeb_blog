@@ -6,8 +6,8 @@ class SendgridEmailSender
   def initialize(user, otp)
     @user = user
     @otp = otp
-    @sendgrid_api_key = Rails.application.credentials.sendgrid[:api_key]
-    @template_id = 'd-c1612442f57b41d5aaf182ba47b15d06'
+    @sendgrid_api_key = ENV["SENDGRID_API_KEY"]
+    @template_id = ENV["SENDGRID_OTP_TEMPLATE_ID"]
   end
 
   def send_otp_email
@@ -23,14 +23,15 @@ class SendgridEmailSender
         {
           to: [{ email: @user.email }],
           dynamic_template_data: {
+            subject: 'Your OTP Code for Wyodeb Blog',
             username: @user.username,
             otp: @otp
           }
         }
       ],
-      from: { email: 'hello@wyodeb.io' },
+      from: { email: 'wyodeb@wyodeb.io' },
       template_id: @template_id,
-      subject: 'Your OTP Code for Wyodeb Blog'
+      reply_to: { email: 'wyodeb@wyodeb.io' }
     }.to_json
 
     request.body = payload
