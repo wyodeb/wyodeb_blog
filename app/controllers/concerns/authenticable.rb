@@ -18,6 +18,16 @@ module Authenticable
     end
   end
 
+  def authorize_comment_owner!
+    if current_user == @comment.user
+      return
+    elsif current_user&.poster? && @comment.post.user == current_user
+      return
+    else
+      render json: { error: 'Forbidden' }, status: :forbidden
+    end
+  end
+
   def current_user
     @current_user
   end

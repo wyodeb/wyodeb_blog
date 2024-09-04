@@ -3,10 +3,6 @@ class PostsController < ApplicationController
   before_action :set_post, only: %i[show update destroy]
   before_action :authorize_poster!, only: %i[create update destroy]
 
-  # GET /posts
-  # GET /posts
-  # GET /posts
-
   def index
     if current_user
       # Authenticated users: show all posts belonging to the current user (including drafts)
