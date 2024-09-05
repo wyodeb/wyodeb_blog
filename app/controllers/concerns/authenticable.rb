@@ -16,10 +16,20 @@ module Authenticable
         render json: { error: 'Unauthorized' }, status: :unauthorized
       end
     end
+    # If no token is provided, simply do not set @current_user; do not render unauthorized
+  end
+
+  def authorize_comment_owner!
+    if current_user == @comment.user
+      return
+    elsif current_user&.poster? && @comment.post.user == current_user
+      return
+    else
+      render json: { error: 'Forbidden' }, status: :forbidden
+    end
   end
 
   def current_user
     @current_user
   end
-
 end
