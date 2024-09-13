@@ -4,6 +4,12 @@ require 'rspec/rails'
 require 'devise'
 require 'factory_bot_rails'
 require 'faker'
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_filter '/app/channels/'
+  add_filter '/app/models/application_record.rb'
+  add_filter 'app/jobs/application_job.rb'
+end
 
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 # Configure RSpec
