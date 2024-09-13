@@ -29,4 +29,7 @@ test:
 # ensure the database is located in a persisted volume.
 production:
   <<: *default
-  # database: path/to/persistent/storage/production.sqlite3
+  database: wyodeb_blog
+  username: db_user
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: <%= ENV['DATABASE_HOST'] %>

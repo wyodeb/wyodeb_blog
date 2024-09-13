@@ -8,11 +8,9 @@ class PostsController < ApplicationController
     if current_user
       posts = Post.where(user_id: current_user.id).or(Post.where(status: 'published'))
     else
-      # Non-authenticated users: show only published posts
       posts = Post.where(status: 'published')
     end
 
-    # Include status information for authenticated users, exclude for others
     render json: posts.as_json(current_user ? { methods: :status } : { except: :status })
   end
 
@@ -43,6 +41,16 @@ class PostsController < ApplicationController
   # POST /posts
   def create
     @post = current_user.posts.new(post_params)
+
+    if params[:categories].present?
+      categories = params[:categories].map do |category_name|
+        Category.find_or_create_by(name: category_name)
+      end
+    else
+      categories = [Category.find_or_create_by(name: "No category")]
+    end
+
+    @post.categories << categories
 
     if @post.save
       render json: @post.as_json(methods: :status), status: :created

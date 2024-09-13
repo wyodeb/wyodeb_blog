@@ -4,7 +4,8 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :update, :destroy]
   end
   resources :comments, only: %i[update destroy]
-  devise_for :users, controllers: { sessions: 'sessions' }
+  devise_for :users, controllers: { sessions: 'sessions' }, skip: :registrations
+
 
   post 'otp/request', to: 'otp#request_otp'
   post 'otp/verify', to: 'otp#verify_otp'

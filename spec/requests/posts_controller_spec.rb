@@ -5,6 +5,7 @@ RSpec.describe PostsController, type: :request do
   let(:commenter) { create(:user, :commenter) }
   let!(:draft_post) { create(:post, user: poster, status: :draft) }
   let!(:published_post) { create(:post, user: poster, status: :published) }
+  let!(:category) { create(:category, name: 'Technology') } # Example category
 
   def set_auth_header(user)
     token = user.generate_authentication_token
@@ -80,17 +81,33 @@ RSpec.describe PostsController, type: :request do
   end
 
   describe 'POST /posts' do
-    context 'when the user is a poster' do
+    context 'when the user is a poster and categories are provided' do
       before do
         set_auth_header(poster)
-        post posts_path, params: { post: { title: 'New Post', content: 'Post content' } }, headers: @headers
+        post posts_path, params: { post: { title: 'New Post with Categories', content: 'Post content' }, categories: ['Technology', 'Science'] }, headers: @headers
       end
 
-      it 'creates a new post with draft status' do
+      it 'creates a new post with the provided categories' do
         expect(response).to have_http_status(:created)
         expect(Post.count).to eq(3)
         json_response = JSON.parse(response.body)
-        expect(json_response['status']).to eq('draft')
+        post = Post.find(json_response['id'])
+        expect(post.categories.pluck(:name)).to include('Technology', 'Science')
+      end
+    end
+
+    context 'when the user is a poster and no categories are provided' do
+      before do
+        set_auth_header(poster)
+        post posts_path, params: { post: { title: 'New Post without Categories', content: 'Post content' } }, headers: @headers
+      end
+
+      it 'creates a new post with the default "No category"' do
+        expect(response).to have_http_status(:created)
+        expect(Post.count).to eq(3)
+        json_response = JSON.parse(response.body)
+        post = Post.find(json_response['id'])
+        expect(post.categories.pluck(:name)).to include('No category')
       end
     end
 
@@ -109,15 +126,18 @@ RSpec.describe PostsController, type: :request do
   end
 
   describe 'PATCH /posts/:slug' do
-    context 'when the user is a poster' do
+    context 'when updating a post' do
       before do
         set_auth_header(poster)
-        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title' } }, headers: @headers
+        patch post_path(draft_post.slug), params: { post: { title: 'Updated Title', content: 'Updated content with more words to test word count.' } }, headers: @headers
       end
 
-      it 'updates the post' do
+      it 'updates the post and recalculates word count and reading time' do
         expect(response).to have_http_status(:ok)
-        expect(draft_post.reload.title).to eq('Updated Title')
+        draft_post.reload
+        expect(draft_post.title).to eq('Updated Title')
+        expect(draft_post.word_count).to eq(23)
+        expect(draft_post.reading_time).to eq(1)
       end
     end
 
@@ -162,4 +182,3 @@ RSpec.describe PostsController, type: :request do
     end
   end
 end
-
