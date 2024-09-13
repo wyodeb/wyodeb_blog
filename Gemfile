@@ -9,6 +9,8 @@ gem "puma", ">= 5.0"
 gem 'devise'
 gem 'devise-token_authenticatable'
 gem 'activerecord-session_store'
+gem 'aws-sdk-ssm'
+
 
 
 
@@ -42,6 +44,10 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+end
+
+group :test do
+  gem 'simplecov', require: false
 end
 
 
