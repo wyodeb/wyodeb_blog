@@ -34,7 +34,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 6.1.4'
 
   gem 'factory_bot_rails',  require: false
-  gem 'shoulda-matchers', '~> 5.0'
+  gem 'shoulda-matchers', '~> 6.4'
   gem 'faker'
   gem 'dotenv-rails'
 
