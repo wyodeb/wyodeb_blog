@@ -228,7 +228,7 @@ GEM
       railties (>= 5.2)
     rexml (3.3.6)
       strscan
-    rspec-core (3.13.0)
+    rspec-core (3.13.1)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -319,7 +319,7 @@ DEPENDENCIES
   faker
   puma (>= 5.0)
   rails (~> 7.2.0)
-  rspec-core (~> 3.13.0)
+  rspec-core (~> 3.13.1)
   rspec-expectations (~> 3.13.3)
   rspec-mocks (~> 3.13.1)
   rspec-rails (~> 7.0.1)
