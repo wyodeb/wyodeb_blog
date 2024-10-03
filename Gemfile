@@ -30,7 +30,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem 'rspec-core', '~> 3.13.0'
   gem 'rspec-expectations', '~> 3.13.3'
-  gem 'rspec-mocks', '~> 3.13.1'
+  gem 'rspec-mocks', '~> 3.13.2'
   gem 'rspec-rails', '~> 7.0.1'
 
   gem 'factory_bot_rails',  require: false
